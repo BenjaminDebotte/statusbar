@@ -1,0 +1,9 @@
+#!/bin/sh
+
+mode=$(cat /proc/sys/vm/laptop_mode)
+
+if [ "$mode" -ne "0" ]; then
+	printf " "
+else
+	printf "ﯥ "
+fi

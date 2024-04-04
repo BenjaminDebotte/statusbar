@@ -1,0 +1,8 @@
+#!/bin/sh
+
+STATUS="$( [[ $(cat ~/.cache/backup) == "0" ]] && echo "OK" || echo "NOK" )"
+case $BLOCK_BUTTON in
+	1) notify-send " Backup status:" "$STATUS" ;;
+esac
+
+[[ $STATUS == "OK" ]] && printf " " || printf " "

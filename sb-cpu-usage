@@ -1,0 +1,16 @@
+#!/bin/sh
+
+case $BUTTON in
+    1) setsid -f "$TERMINAL" -e htop ;;
+    3) notify-send "💽 CPU usage module
+- Shows CPU usage percentage
+- Left click to open 'htop'" ;;
+    6) "$TERMINAL" -e "$EDITOR" "$0" ;;
+esac
+
+mem="$(free -h --si | sed -n '2{p;q}' | awk '{print "󰍛", $3 "/" $2}')"
+cpu="$(top -bn 1 | awk '/^%Cpu/ {printf " %.f%%", $2 + $4 + $6}')"
+
+printf "%s %s\n" "$cpu" "$mem"
+#cat <(sleep 1 && grep 'cpu ' /proc/stat) | awk -v rs="" '{printf "💽 %.2f%%", ($13-$2+$15-$4)*100/($13-$2+$15-$4+$16-$5)}'
+

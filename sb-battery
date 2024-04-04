@@ -1,0 +1,42 @@
+#!/bin/sh
+
+case $BUTTON in
+  1) notify-send "$(upower -i `upower -e | grep 'BAT'` | grep "time" | xargs)" ;;
+  3) notify-send " Battery module" "\- Left click shows time to empty or time to full" ;;
+  6) "$TERMINAL" -e "$EDITOR" "$0" ;;
+esac
+
+# Loop through all attached batteries and format the info
+for battery in /sys/class/power_supply/BAT*
+do
+  # If non-first battery, print a space separator.
+  [ -n "${capacity+x}" ] && printf " "
+  # Sets up the status and capacity
+  case "$(cat "$battery/status")" in
+    "Full") status="c" ;;
+    "Charging") status="c" ;;
+    "Discharging") status="d" ;;
+  esac
+  capacity=$(cat "$battery/capacity")
+  # Will make a warn variable if discharging and low
+
+  [ "$status" = "d" ] && [ "$capacity" -le 20 ] && warn=""
+
+  [ "$capacity" -le 100 ] && icon="󰁹"
+  [ "$capacity" -le 90 ] && icon="󰂂"
+  [ "$capacity" -le 80 ] && icon="󰂁"
+  [ "$capacity" -le 70 ] && icon="󰂀"
+  [ "$capacity" -le 60 ] && icon="󰁿"
+  [ "$capacity" -le 50 ] && icon="󰁾"
+  [ "$capacity" -le 40 ] && icon="󰁽"
+  [ "$capacity" -le 30 ] && icon="󰁼"
+  [ "$capacity" -le 20 ] && icon="󰁻"
+  [ "$capacity" -le 10 ] && icon="󰁺"
+  [ "$capacity" -le 5 ] && icon="󰂎"
+
+  [ "$status" = "c" ] && icon=""
+
+  # Prints the info
+  printf "%s%s %d%%" "$icon" "$warn" "$capacity"; unset warn
+done && exit 0
+
