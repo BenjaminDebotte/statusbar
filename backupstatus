@@ -1,0 +1,18 @@
+
+#!/bin/sh
+
+case $BUTTON in
+  1) get_backup_status ;;
+  3) notify-send "Backup Module" "\- Left click shows last status" ;;
+  6) "$TERMINAL" -e "borgmatic" "info" ;;
+esac
+
+function get_backup_status {
+  DATE=$(tail -n1 /var/log/backup.log | awk -F '|' '{print $1}')
+  ERROR_MSG=$(tail -n1 /var/log/backup.log | awk -F '|' '{print $2}')
+  CONFIG=$(tail -n1 /var/log/backup.log | awk -F '|' '{print $3}')
+  REPO=$(tail -n1 /var/log/backup.log | awk -F '|' '{print $4}')
+  dunstify "borgmatic - ${CONFIG}" "$DATE\n$ERROR_MSG\n\n$REPO"
+}
+
+[[ $(tail -n1 /var/log/backup.log | grep "Error") != "" ]] && echo -n "󱄍" || echo -n "󰁯"
